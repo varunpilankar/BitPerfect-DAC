@@ -20,4 +20,4 @@ For streaming apps (DRM) a known test file cannot be played, so **bit-exactness 
 4. Save evidence with `su -c bpdump` and `su -c bpverify`.
 
 ## Automated tests
-`sh tests/run.sh` – 28 checks over fixtures in `tests/fixtures/`. Fixtures are modelled on structures observed on the reference device. Add a fixture for each new device.
+`sh tests/run.sh` – 31 checks over fixtures in `tests/fixtures/` and repository/documentation structure. Fixtures are modelled on structures observed on the reference device. Add a fixture for each new device.

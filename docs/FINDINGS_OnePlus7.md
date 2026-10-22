@@ -34,3 +34,5 @@ In the v0.8 dump `Config source` was `/vendor/etc/audio_policy_configuration.xml
 - Whether a pinned, rate-matched, unity-gain, effect-free stream reaches the DAC unchanged (never captured).
 - Whether Spotify behaves like Apple Music (never captured).
 - Whether the DAC receives the mixer's rate under offload.
+
+Follow-up verification tracks for each of these open items are defined in [PLANS.md](PLANS.md#2-technical-investigation-plans).

@@ -1,6 +1,6 @@
 # Handover
 
-This document is for the next maintainer. It states what exists, what was proven, what was **not**, and what to do next. Read it together with [ARCHITECTURE.md](ARCHITECTURE.md) and [FINDINGS_OnePlus7.md](FINDINGS_OnePlus7.md).
+This document is for the next maintainer. It states what exists, what was proven, what was **not**, and what to do next. Read it together with [ARCHITECTURE.md](ARCHITECTURE.md), [FINDINGS_OnePlus7.md](FINDINGS_OnePlus7.md), and [PLANS.md](PLANS.md).
 
 > **Honest status (module v0.9.1):** experimental. Everything was developed by remote iteration against diagnostic dumps from **one** device. The module has never been confirmed, end to end, to deliver a rate-matched, unity-gain stream to a USB DAC for Apple Music *or* Spotify. See [Open problems](#open-problems).
 
@@ -67,7 +67,7 @@ Ordered by priority. None is solved.
 ## 7. How to work on it
 
 ```sh
-sh tests/run.sh            # 28 offline tests (policy patching, dump parsing, rate picking)
+sh tests/run.sh            # 31 offline tests (policy patching, dump parsing, rate picking, repo/docs checks)
 sh scripts/build.sh        # -> dist/BitPerfect-DAC-<version>.zip (+ .sha256)
 ```
 
