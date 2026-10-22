@@ -89,34 +89,34 @@ See docs/TESTING.md.
 
 ### Phase 1 — Research and baseline
 
-- [ ]Document the Android USB audio pipeline.
-- [ ]Establish a baseline on a rooted test device.
-- [ ]Record the behavior of Apple Music and Spotify without modifications.
-- [ ]Identify the point at which resampling occurs.
-- [ ]Document safe rollback and recovery procedures.
+- [ ] Document the Android USB audio pipeline.
+- [ ] Establish a baseline on a rooted test device.
+- [ ] Record the behavior of Apple Music and Spotify without modifications.
+- [ ] Identify the point at which resampling occurs.
+- [ ] Document safe rollback and recovery procedures.
 
 ### Phase 2 — Proof of concept
 
-- [ ]Identify a technically justified intervention.
-- [ ]Implement the smallest reversible change.
-- [ ]Confirm that installation and removal work correctly.
-- [ ]Check for boot loops, audio failures, and unexpected system changes.
-- [ ]Compare output behavior against the baseline.
+- [ ] Identify a technically justified intervention.
+- [ ] Implement the smallest reversible change.
+- [ ] Confirm that installation and removal work correctly.
+- [ ] Check for boot loops, audio failures, and unexpected system changes.
+- [ ] Compare output behavior against the baseline.
 
 ### Phase 3 — Compatibility and validation
 
-- [ ]Test multiple source sample rates.
-- [ ]Verify USB DAC output format and sample integrity.
-- [ ]Test Apple Music and Spotify separately.
-- [ ]Document Android versions, ROMs, and device-specific behavior.
-- [ ]Publish test evidence and known limitations.
+- [ ] Test multiple source sample rates.
+- [ ] Verify USB DAC output format and sample integrity.
+- [ ] Test Apple Music and Spotify separately.
+- [ ] Document Android versions, ROMs, and device-specific behavior.
+- [ ] Publish test evidence and known limitations.
 
 ### Phase 4 — Release
 
-- [ ]Finalize the module installation and uninstallation flow.
-- [ ]Add release packaging and versioning.
-- [ ]Publish a tested release ZIP and checksums.
-- [ ]Maintain compatibility notes and a changelog.
+- [ ] Finalize the module installation and uninstallation flow.
+- [ ] Add release packaging and versioning.
+- [ ] Publish a tested release ZIP and checksums.
+- [ ] Maintain compatibility notes and a changelog.
 
 ## Contributing
 
