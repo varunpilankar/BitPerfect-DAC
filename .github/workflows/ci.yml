@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Offline tests
+        run: sh tests/run.sh
+      - name: Syntax check shell scripts
+        run: |
+          for f in module/*.sh module/system/bin/* scripts/build.sh tests/run.sh; do sh -n "$f"; done
+      - name: Build module ZIP
+        run: sh scripts/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BitPerfect-DAC-module
+          path: dist/*
