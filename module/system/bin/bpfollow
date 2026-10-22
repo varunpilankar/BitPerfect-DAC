@@ -1,0 +1,44 @@
+#!/system/bin/sh
+# Daemon: follows the active track's sample rate on the USB output. Toggle: bprate auto on|off
+MODDIR=/data/adb/modules/usb_dac_bitperfect
+STATE=/data/adb/usb_dac_bitperfect
+. "$MODDIR/common.sh"
+PIDF=$STATE/follow.pid; LOG=$STATE/follow.log
+if [ -f "$PIDF" ] && kill -0 "$(cat $PIDF)" 2>/dev/null && [ "$(cat $PIDF)" != "$$" ]; then exit 0; fi
+echo $$ > "$PIDF"
+log() { echo "$(date '+%F %T') $*" >> "$LOG"; [ "$(wc -c < "$LOG")" -gt 100000 ] && { tail -n 200 "$LOG" > "$LOG.t"; mv "$LOG.t" "$LOG"; }; }
+last=""; n=0; sw=0; win=$(date +%s); t0=0; prev=""
+log "bpfollow v0.7 started"
+while [ -f "$STATE/auto" ]; do
+  card=$(usb_card)
+  if [ -z "$card" ]; then last=""; n=0; nap 1.5; continue; fi
+  load_probe
+  line=$(status_line)
+  if [ "$line" != "$prev" ]; then
+    prev=$line; echo "$line" > "$STATE/status"
+    # live push to the BP DAC app/widget if it is installed (background so the loop is not delayed)
+    [ -d /data/user/0/com.bpdac ] && ( am broadcast -n com.bpdac/.StatusReceiver -a com.bpdac.STATUS --es line "$line" >/dev/null 2>&1 & )
+    [ -f "$STATE/notify" ] && cmd notification post -t "USB DAC" bitperfect "$line" >/dev/null 2>&1
+  fi
+  if [ "$active" != 1 ] || [ "$trate" = multi ] || [ "$trate" = - ]; then last=""; n=0; nap 1; continue; fi
+  want=$(pick_rate "$trate" "$card/stream0"); cur=$(cat "$STATE/rate" 2>/dev/null)
+  if [ -z "$want" ] || [ "$want" = "$cur" ]; then last=""; n=0; nap 0.4; continue; fi
+  if [ "$want" = "$last" ]; then n=$((n+1)); else last=$want; n=1; t0=$(now_ms); fi
+  [ "$n" -ge 2 ] || { nap 0.25; continue; }
+  now=$(date +%s)
+  [ $((now - win)) -gt 120 ] && { win=$now; sw=0; }
+  sw=$((sw+1))
+  if [ "$sw" -gt 6 ]; then log "too many switches; auto-follow disabled"; rm -f "$STATE/auto"; break; fi
+  t1=$(now_ms)
+  apply_rate "$want"
+  # wait for audioserver to come back instead of a fixed sleep
+  k=0; nap 0.5
+  while [ $k -lt 30 ]; do
+    pidof audioserver >/dev/null 2>&1 && dumpsys media.audio_flinger 2>/dev/null | grep -q "^Output thread" && break
+    nap 0.2; k=$((k+1))
+  done
+  t2=$(now_ms)
+  log "track $(khz "$trate"): mixer $cur -> $want | detect $((t1-t0)) ms, restart $((t2-t1)) ms"
+  last=""; n=0; prev=""; nap 1
+done
+rm -f "$PIDF"

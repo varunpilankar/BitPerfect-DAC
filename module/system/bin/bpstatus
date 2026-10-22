@@ -1,0 +1,6 @@
+#!/system/bin/sh
+# One-line live status: mixer rate/bit depth/bitrate vs source track. "bpstatus -w" refreshes every second.
+. /data/adb/modules/usb_dac_bitperfect/common.sh
+show() { load_probe; status_line; }
+fx() { e=$(active_effects); [ -n "$e" ] && echo "ENABLED EFFECTS (alter audio): $e"; }
+if [ "$1" = "-w" ]; then while true; do printf '\r\033[K%s' "$(show)"; sleep 1; done; else show; fx; fi

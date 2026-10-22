@@ -1,0 +1,43 @@
+#!/system/bin/sh
+# bprate [status|auto on|off|notify on|off|deepbuffer keep|trim|<rate>] [force]
+MODDIR=/data/adb/modules/usb_dac_bitperfect
+STATE=/data/adb/usb_dac_bitperfect
+. "$MODDIR/common.sh"
+[ "$(id -u)" = 0 ] || { echo "Run as root: su -c 'bprate 96000'"; exit 1; }
+case "$1" in
+  ""|status)
+    echo "Configured USB mixer rate: $(cat $STATE/rate 2>/dev/null) Hz"
+    [ -f "$STATE/auto" ] && echo "Auto-follow: ON" || echo "Auto-follow: OFF"
+    [ -f "$STATE/notify" ] && echo "Notification: ON" || echo "Notification: OFF"
+    [ -f "$STATE/keep_deep_buffer" ] && echo "Deep-buffer trim: OFF" || echo "Deep-buffer trim: ON"
+    exit 0 ;;
+  auto)
+    case "$2" in
+      on)  touch "$STATE/auto"; nohup "$MODDIR/system/bin/bpfollow" >/dev/null 2>&1 &
+           echo "Auto-follow ON (log: $STATE/follow.log)"; exit 0 ;;
+      off) rm -f "$STATE/auto"; echo "Auto-follow OFF"; exit 0 ;;
+      *)   echo "Usage: bprate auto on|off"; exit 1 ;;
+    esac ;;
+  notify)
+    case "$2" in
+      on)  touch "$STATE/notify"; echo "Status notification ON (updates while auto-follow runs)"; exit 0 ;;
+      off) rm -f "$STATE/notify"; cmd notification cancel bitperfect >/dev/null 2>&1; echo "Status notification OFF"; exit 0 ;;
+      *)   echo "Usage: bprate notify on|off"; exit 1 ;;
+    esac ;;
+  deepbuffer)
+    case "$2" in keep) touch "$STATE/keep_deep_buffer" ;; trim) rm -f "$STATE/keep_deep_buffer" ;; *) echo "Usage: bprate deepbuffer keep|trim"; exit 1 ;; esac
+    R=$(cat "$STATE/rate") ;;
+  44100|48000|88200|96000|176400|192000|352800|384000) R=$1 ;;
+  *) echo "Usage: bprate [status|auto on|off|notify on|off|deepbuffer keep|trim|44100|48000|88200|96000|176400|192000] [force]"; exit 1 ;;
+esac
+if [ "$1" != deepbuffer ]; then
+  for c in /proc/asound/card*; do
+    [ -f "$c/usbid" ] || continue
+    if ! rate_supported "$R" "$c/stream0" && [ "$2" != "force" ]; then
+      echo "DAC ($(cat $c/id)) does not list $R Hz. Add 'force' to override."; exit 1
+    fi
+  done
+fi
+[ -s "$MODDIR/orig.list" ] || { echo "Diagnostic mode: no policy overlay was installed. Run bpdiag and share the output."; exit 1; }
+apply_rate "$R"
+echo "Rate set to $R Hz. Audio server restarting."

@@ -1,0 +1,34 @@
+#!/system/bin/sh
+# Verifies what actually reaches the USB DAC (kernel level) - no DAC display needed.
+. /data/adb/modules/usb_dac_bitperfect/common.sh
+echo "Configured mixer rate: $(cat /data/adb/usb_dac_bitperfect/rate 2>/dev/null) Hz"
+[ -f /data/adb/usb_dac_bitperfect/auto ] && echo "Auto-follow: ON" || echo "Auto-follow: OFF"
+echo "Detected active track rate on USB output: $(track_rate) (blank = none/ambiguous/unparsed)"
+echo "STATUS: $(bpstatus)"
+FOUND=0
+for c in /proc/asound/card*; do
+  [ -f "$c/usbid" ] || continue
+  FOUND=1
+  echo "=== USB card: $(cat $c/id) (usbid $(cat $c/usbid))"
+  echo "-- DAC advertises:"; grep -E "Format:|Rates:" "$c/stream0" | sort -u
+  ACTIVE=0
+  for p in $c/pcm*p/sub*/hw_params; do
+    [ -f "$p" ] || continue
+    if grep -q "^closed" "$p"; then continue; fi
+    ACTIVE=1
+    echo "-- ACTIVE stream ($p):"; cat "$p"
+    fmt=$(grep '^format:' "$p" | awk '{print $2}'); rate=$(grep '^rate:' "$p" | awk '{print $2}')
+    echo ">> Reaching DAC: $rate Hz, $fmt"
+    case "$fmt" in
+      S16_LE) echo ">> NOTE: 16-bit. Fine for 16-bit sources; a 24-bit track is being reduced upstream (app or mixer)." ;;
+      S24_3LE|S24_LE|S32_LE) echo ">> 24/32-bit container to DAC." ;;
+    esac
+  done
+  [ "$ACTIVE" = 0 ] && echo "-- No active stream. Start playback in Spotify/Apple Music and run again."
+done
+[ "$FOUND" = 0 ] && echo "No USB audio card found. Check OTG/host mode and cable."
+echo; echo "-- AudioFlinger USB output threads (authoritative for the mixer rate):"\nusb_thread_info\necho "-- Active/idle tracks on USB threads (SRate = source rate; G/L/R dB should be 0.0 for unity):"\nusb_tracks\necho "   (if ALSA shows closed during playback, the Qualcomm USB offload path is active; the mixer rate above is what the HAL is given)"\necho; echo "-- AudioFlinger (informational):"
+dumpsys media.audio_flinger 2>/dev/null | grep -iE "^Output thread|Sample rate:|HAL format:|Output devices:|Effect chain" | head -n 40
+echo; echo "-- Media volume (keep at MAX; control level on the DAC/amp):"
+dumpsys audio 2>/dev/null | grep -A6 -- "- STREAM_MUSIC:" | head -n 10
+echo; echo "Reminder: effects (AudioFX/Dolby/EQ), loudness, volume normalisation, crossfade, Spotify/Apple EQ must be OFF."

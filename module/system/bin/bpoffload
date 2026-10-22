@@ -1,0 +1,9 @@
+#!/system/bin/sh
+# bpoffload [on|off|status]  - optional experiment: disable Qualcomm USB offload at next boot (host driver then handles USB and ALSA hw_params shows the real rate)
+STATE=/data/adb/usb_dac_bitperfect
+[ "$(id -u)" = 0 ] || { echo "Run as root"; exit 1; }
+case "$1" in
+  off) touch "$STATE/usb_offload_off"; echo "USB offload will be disabled at next boot. Reboot to apply." ;;
+  on)  rm -f "$STATE/usb_offload_off"; echo "USB offload left at ROM default at next boot. Reboot to apply." ;;
+  *)   echo "vendor.audio.feature.usb_offload.enable = $(getprop vendor.audio.feature.usb_offload.enable); module flag: $([ -f $STATE/usb_offload_off ] && echo OFF || echo default)" ;;
+esac
