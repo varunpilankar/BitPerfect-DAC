@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Tester guide and 15-minute verification checklist
+    url: https://github.com/varunpilankar/BitPerfect-DAC/blob/main/docs/TESTER_GUIDE.md
+    about: Step-by-step instructions for capturing reproducible audio pipeline results
+  - name: Troubleshooting and reading bpverify / bpstatus
+    url: https://github.com/varunpilankar/BitPerfect-DAC/blob/main/docs/TROUBLESHOOTING.md
+    about: Diagnose overlay, volume attenuation, and effect issues before opening a bug
+  - name: Security vulnerability report
+    url: https://github.com/varunpilankar/BitPerfect-DAC/security/advisories/new
+    about: Report suspected security vulnerabilities privately per SECURITY.md

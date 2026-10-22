@@ -139,10 +139,15 @@ Full list and priorities: [docs/HANDOVER.md](docs/HANDOVER.md#5-open-problems).
 | [FINDINGS_OnePlus7](docs/FINDINGS_OnePlus7.md) | Evidence from the reference device |
 | [COMPATIBILITY](docs/COMPATIBILITY.md) | Tested configurations |
 | [DECISIONS](docs/DECISIONS.md) | Design choices, rejected options, prior art |
+| [PLANS](docs/PLANS.md) | Milestone criteria, investigation tracks, release workflow |
 | [HANDOVER](docs/HANDOVER.md) | State of the project for maintainers |
 | [CHANGELOG](CHANGELOG.md) | Version history |
+| [CONTRIBUTING](CONTRIBUTING.md) | Contribution rules, test suite, PR checklist |
+| [SECURITY](SECURITY.md) | Security scope and vulnerability reporting |
 
 ## Roadmap
+
+Detailed milestone exit criteria and investigation tracks are maintained in [docs/PLANS.md](docs/PLANS.md).
 
 ### Phase 1 — Research and baseline
 
@@ -189,7 +194,7 @@ Contributions are welcome, especially:
 - Device-specific diagnostic information.
 - Code reviews and improvements to installation safety.
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes. Run `sh tests/run.sh` (28 offline checks) first.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes. Run `sh tests/run.sh` (31 offline checks) first.
 
 ## Reporting issues
 
