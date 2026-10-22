@@ -1,0 +1,9 @@
+Output thread 0xb40000739f2b6790, name AudioOut_4D, tid 5411, type 0 (MIXER):
+  Standby: no
+  Sample rate: 44100 Hz
+  HAL format: 0x3 (AUDIO_FORMAT_PCM_32_BIT)
+  Output devices: 0x4000000 (AUDIO_DEVICE_OUT_USB_HEADSET)
+  1 Tracks of which 1 are active
+    Type     Id Active Client(pid/uid) Session Port Id S  Flags   Format Chn mask  SRate ST Usg CT  G db  L dB  R dB  VS dB  PortVol dB  PortMuted   Server FrmCnt
+             58    yes    1234/  10001     233      40 A  0x000 00000001 00000003  44100  3   1  0     0     0     0     0           0      false 00294898  30752
+
