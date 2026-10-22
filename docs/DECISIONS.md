@@ -11,6 +11,10 @@
 | Abort install rather than ship an empty overlay on update | protects a working install | silent diagnostic mode (v0.3–0.7 behaviour) |
 | Boot guard: 2 strikes | one quick reboot must not disable the module | single-strike guard (v0.1–0.7) |
 | 32-bit container, stereo only | USB profile exposes `PCM_32_BIT`; simplest lossless container | 24-bit packed; multichannel (`0x80000003` appears in the DAC profile; not handled) |
+| Offline POSIX test gate in CI | module scripts run on device root shells where mistakes risk audio/boot issues; fixtures catch regressions before packaging | manual device-only testing |
+| Publish tagged builds as GitHub pre-releases | end-to-end bit-perfect output is not yet confirmed on-device; avoids implying production readiness | marking unverified tags as stable releases |
+
+See [PLANS.md](PLANS.md) for the milestone roadmap and planned investigations for open items.
 
 ## Prior art reviewed (ideas only; no code copied)
 - Magisk-Modules-Alt-Repo/audio-samplerate-changer – changes mixer sample rates system-wide (max-rate approach).

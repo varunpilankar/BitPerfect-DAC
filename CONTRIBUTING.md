@@ -15,7 +15,7 @@ sh scripts/build.sh    # builds dist/ZIP
 ```
 - Shell must run under Android `mksh`/toybox and Magisk busybox `awk`: POSIX only, no arrays, no `[[ ]]`, no process substitution.
 - Parsing of `dumpsys` output lives in `module/common.sh`. Add a fixture under `tests/fixtures/` and an assertion in `tests/run.sh` for every new layout.
-- Keep `docs/` in sync (COMPATIBILITY, TROUBLESHOOTING, CHANGELOG).
+- Keep `docs/` in sync (COMPATIBILITY, TROUBLESHOOTING, PLANS, CHANGELOG).
 
 ## Pull request checklist
 - [ ] Tests pass; new fixture added if parsing changed

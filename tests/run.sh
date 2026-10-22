@@ -52,6 +52,31 @@ check "only enabled effects reported" "$(active_effects)" "Volume listener for M
 
 check "sanitize_report strips pid/uid and pointers" "$(printf '  58 yes 4990/  10198 0xb4000072110939f0\n' | sanitize_report)" "  58 yes <pid>/<uid> <ptr>"
 
+REPO=$(cd "$HERE/.." && pwd)
+missing_docs=""
+for d in README.md LICENSE CHANGELOG.md CONTRIBUTING.md SECURITY.md \
+         docs/ARCHITECTURE.md docs/COMPATIBILITY.md docs/DECISIONS.md docs/FAQ.md \
+         docs/FINDINGS_OnePlus7.md docs/HANDOVER.md docs/INSTALL.md docs/PLANS.md \
+         docs/TESTER_GUIDE.md docs/TESTING.md docs/TROUBLESHOOTING.md; do
+  [ -s "$REPO/$d" ] || missing_docs="$missing_docs $d"
+done
+check "repo documentation files present" "$missing_docs" ""
+
+missing_gh=""
+for g in .github/workflows/ci.yml .github/workflows/release.yml \
+         .github/PULL_REQUEST_TEMPLATE.md .github/CODEOWNERS .github/dependabot.yml \
+         .github/ISSUE_TEMPLATE/bug_report.md .github/ISSUE_TEMPLATE/compatibility_report.md \
+         .github/ISSUE_TEMPLATE/config.yml; do
+  [ -s "$REPO/$g" ] || missing_gh="$missing_gh $g"
+done
+check "github repo setup files present" "$missing_gh" ""
+
+bad_sh=""
+for s in "$REPO"/module/*.sh "$REPO"/module/system/bin/* "$REPO/scripts/build.sh" "$REPO/tests/run.sh"; do
+  sh -n "$s" 2>/dev/null || bad_sh="$bad_sh $(basename "$s")"
+done
+check "shell scripts pass syntax check" "$bad_sh" ""
+
 rm -rf "$T"
 echo; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" = 0 ]
