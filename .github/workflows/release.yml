@@ -1,0 +1,17 @@
+name: Pre-release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh tests/run.sh
+      - run: sh scripts/build.sh
+      - name: Publish pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --prerelease --generate-notes --title "$GITHUB_REF_NAME (experimental)"

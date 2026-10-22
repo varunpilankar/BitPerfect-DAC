@@ -1,0 +1,5 @@
+ - Effects (2):
+  1. Effect ID: 11; Attached to I/O handle: 93; Session: 233;
+     Music Effect? yes; "Equalizer"; Disabled; Active
+  2. Effect ID: 43; Attached to I/O handle: 93; Session: 233;
+     Music Effect? yes; "Volume listener for Music"; Enabled; Active

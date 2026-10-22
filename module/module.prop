@@ -1,0 +1,6 @@
+id=usb_dac_bitperfect
+name=USB DAC Bit-Perfect Helper
+version=v0.9.1
+versionCode=10
+author=BitPerfect-DAC contributors
+description=Pins the AudioFlinger USB mixer (hifi_playback) to one rate instead of the DAC maximum (384 kHz) and can follow the track rate. Tools: bpstatus, bpcheck, bprate, bpverify, bpdiag, bpdump, bpoffload. EXPERIMENTAL.

@@ -1,0 +1,22 @@
+#!/system/bin/sh
+# Why is (or isn't) the overlay active?  Share the whole output.
+MODDIR=/data/adb/modules/usb_dac_bitperfect
+STATE=/data/adb/usb_dac_bitperfect
+. "$MODDIR/common.sh"
+echo "### module dir"; ls -la "$MODDIR" 2>&1 | head -30
+echo "### disable/guard state"; ls "$MODDIR/disable" "$MODDIR/remove" "$MODDIR/system.disabled" "$MODDIR/.boot_fail" 2>&1 | head; cat "$MODDIR/.boot_fail" 2>/dev/null
+echo "### orig.list"; cat "$MODDIR/orig.list" 2>&1
+echo "### overlay files"; find "$MODDIR/system" -type f 2>/dev/null | head -20
+echo "### installer log"; cat "$MODDIR/install.log" 2>&1 | head -40
+echo "### boot.log"; cat "$STATE/boot.log" 2>&1
+echo "### live policy file"
+F=/vendor/etc/audio_policy_configuration.xml
+ls -lZ "$F"; echo "pinned hifi_playback lines: $(grep -c 'name="hifi_playback"[^>]*><profile' $F)"; grep -n 'hifi_playback' "$F" | cut -c1-200
+echo "deep_buffer in USB routes:"; grep -n -A1 'sink="USB' "$F" | cut -c1-200
+echo "### overlay file context"; for f in $(find "$MODDIR/system" -type f -name '*.xml' 2>/dev/null); do ls -lZ "$f"; done
+echo "### mounts touching vendor/etc"; grep -E 'vendor/etc|audio_policy' /proc/mounts | head
+echo "### other modules"; ls /data/adb/modules
+echo "### effects xml (volume listener lines)"
+for f in /vendor/etc/audio_effects.xml /vendor/etc/audio_effects.conf /system/etc/audio_effects.xml /odm/etc/audio_effects.xml; do [ -f "$f" ] && { echo "## $f"; grep -n -i -E 'volume_listener|volumelistener' "$f" | cut -c1-220; }; done
+echo "### current rate/state"; echo "rate=$(cat $STATE/rate 2>/dev/null) auto=$([ -f $STATE/auto ] && echo on || echo off)"
+echo "### status"; bpstatus

@@ -1,0 +1,32 @@
+#!/system/bin/sh
+# Run WHILE MUSIC IS PLAYING through the USB DAC. Output also saved to /data/local/tmp/bpdiag.txt
+OUT=/data/local/tmp/bpdiag.txt\n. /data/adb/modules/usb_dac_bitperfect/common.sh
+{
+echo "### device"; getprop ro.product.device; getprop ro.build.version.release; getprop ro.lineage.version
+echo "### magisk modules"; ls /data/adb/modules 2>/dev/null
+echo "### usb/audio props"; getprop | grep -i -E "usb_offload|usb.*audio|audio.*usb|audio.*hifi|src" | head -30
+echo "### ALSA"; cat /proc/asound/cards
+for c in /proc/asound/card*; do
+  [ -f "$c/usbid" ] || continue
+  echo "## $c stream0"; grep -E "Status|Momentary|Rates|Format" "$c/stream0"
+  for p in $c/pcm*p/sub*/hw_params; do [ -f "$p" ] && { echo "## $p"; cat "$p"; }; done
+done
+echo "### policy mixPorts/profiles (/vendor/etc/audio_policy_configuration.xml)"
+grep -n -E "<mixPort|<profile|HIFI|<route" /vendor/etc/audio_policy_configuration.xml | cut -c1-260 | head -120
+echo "### routes to USB (sources lines)"
+grep -n -A2 -E 'sink="USB (Device|Headset) Out"' /vendor/etc/audio_policy_configuration.xml | cut -c1-300
+grep -n -B1 -A4 "hifi_playback" /vendor/etc/audio_policy_configuration.xml | cut -c1-260 | head -40
+echo "### audio_flinger: threads routed to USB (with track tables)"
+dumpsys media.audio_flinger 2>/dev/null | awk '
+  function flush() { if (buf ~ /AUDIO_DEVICE_OUT_USB/) { print buf } buf="" }
+  /^Output thread/ { flush() }
+  { if (buf != "" || $0 ~ /^Output thread/) { n++; if (n < 90) buf = buf $0 "\n" } }
+  /^Output thread/ { n = 1 }
+  END { flush() }' | cut -c1-260
+echo "### USB track tables"\nusb_tracks\necho "### audio_flinger: all thread rates"
+dumpsys media.audio_flinger 2>/dev/null | grep -E "^(- )?Output thread|Sample rate:|HAL format:|Output devices:" | cut -c1-160 | head -60
+echo "### audio_policy: outputs"
+dumpsys media.audio_policy 2>/dev/null | grep -n -E "Output [0-9]+|Sampling rate|Format:|Flags|Devices" | head -50
+} 2>&1 | tee "$OUT"
+cp "$OUT" /sdcard/Download/bpdiag.txt 2>/dev/null
+echo; echo "Saved: $OUT (and /sdcard/Download/bpdiag.txt)"

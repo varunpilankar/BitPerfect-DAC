@@ -1,0 +1,3 @@
+    Endpoint: 3 OUT (ADAPTIVE)
+    Rates: 44100, 48000, 96000, 192000, 384000
+    Format: S24_3LE

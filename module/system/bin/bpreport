@@ -1,0 +1,21 @@
+#!/system/bin/sh
+# Tester report: run WHILE A TRACK PLAYS. Writes a sanitized text file to /sdcard/Download/bitperfect-report.txt
+MODDIR=/data/adb/modules/usb_dac_bitperfect
+. "$MODDIR/common.sh"
+OUT=/data/local/tmp/bitperfect-report.txt
+{
+  echo "BitPerfect-DAC report"
+  echo "date:    $(date)"
+  echo "module:  $(sed -n 's/^version=//p' "$MODDIR/module.prop")"
+  echo "device:  $(getprop ro.product.device) | android $(getprop ro.build.version.release) | lineage $(getprop ro.lineage.version)"
+  echo "root:    $(su -v 2>/dev/null)"
+  echo "dac:     $(for c in /proc/asound/card*; do [ -f "$c/usbid" ] && echo "$(cat $c/id) usbid=$(cat $c/usbid)"; done)"
+  echo
+  echo "== status (run while playing)"; bpstatus
+  echo; echo "== USB output threads"; usb_thread_info
+  echo; echo "== USB track tables"; usb_tracks
+  echo; echo "== verify"; bpverify
+} 2>&1 | sanitize_report > "$OUT"
+cp "$OUT" /sdcard/Download/bitperfect-report.txt 2>/dev/null
+echo "Saved $OUT and /sdcard/Download/bitperfect-report.txt"
+echo "Review it before posting: pid/uid pairs and pointers are removed, but module names and the DAC model are kept."
